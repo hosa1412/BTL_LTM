@@ -100,13 +100,11 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="btnPlay" alignment="3" min="-2" pref="36" max="-2" attributes="0"/>
                               <Component id="btnGetInfo" alignment="3" min="-2" pref="36" max="-2" attributes="0"/>
+                              <Component id="jButtonRanking" alignment="0" min="-2" pref="36" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="jButtonRanking" alignment="3" min="-2" pref="39" max="-2" attributes="0"/>
-                      <Component id="btnRefresh" alignment="3" min="-2" pref="36" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="btnRefresh" min="-2" pref="36" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="16" max="32767" attributes="0"/>
           </Group>
