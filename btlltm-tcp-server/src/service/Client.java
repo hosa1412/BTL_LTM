@@ -5,6 +5,7 @@
  */
 package service;
 
+import controller.GameController;
 import controller.UserController;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,9 +15,12 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import run.ServerRun;
-import helper.Question;
+//import helper.Question;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
+import model.Game;
 import model.UserModel;
 
 /**
@@ -90,6 +94,12 @@ public class Client implements Runnable {
                         break;
                     case "CHAT_MESSAGE":
                         onReceiveChatMessage(received);
+                        break;
+                    case "CHATALL":
+                        onReceiveChatAll(received);
+                        break;
+                    case "CHAT":
+                        onReceiveChat(received);
                         break;
                     case "RANKING":
                         onReceiveRanking();
@@ -179,6 +189,8 @@ public class Client implements Runnable {
         
         // send result
         sendData("LOGIN" + ";" + result);
+        String msg = "CHAT;[Server]: " + username + " is online\n";
+        ServerRun.clientManager.broadcast(msg);
         onReceiveGetListOnline();
     }
     
@@ -238,10 +250,22 @@ public class Client implements Runnable {
         sendData("LOADUSER" + ";" + res );
     }
     
+    public void onReceiveChatAll(String received){
+        sendData(received);
+    }
+    
+    public void onReceiveChat(String received){
+//        sendData(received);
+        ServerRun.clientManager.broadcast(received);
+    }
+    
     private void onReceiveLogout() {
+        String username = this.loginUser;
         this.loginUser = null;
         // send result
         sendData("LOGOUT" + ";" + "success");
+        String msg = "CHAT;[Server]: " + username + " is offline\n";
+        ServerRun.clientManager.broadcast(msg);
         onReceiveGetListOnline();
     }
     
@@ -407,13 +431,14 @@ public class Client implements Runnable {
         int randomNumber = random.nextInt(8) + 1;
         
         String imagePath = "src/image/image" + Integer.toString(randomNumber) + ".jpg" ;
-        String question1 = Question.renQuestion();
-        String question2 = Question.renQuestion();
-        String question3 = Question.renQuestion();
-        String question4 = Question.renQuestion();
-        
-        String data = "START_GAME;success;" + roomId + ";" + question1 + question2 + question3 + question4 + imagePath;
-        // Send question here
+//        String question1 = Question.renQuestion();
+//        String question2 = Question.renQuestion();
+//        String question3 = Question.renQuestion();
+//        String question4 = Question.renQuestion();
+        String question = new Question().getQuestion(imagePath);
+//        String data = "START_GAME;success;" + roomId + ";" + question1 + question2 + question3 + question4 + imagePath;
+         String data = "START_GAME;success;" + roomId + ";" + question + ";" + imagePath;
+       // Send question here
         joinedRoom.resetRoom();
         joinedRoom.broadcast(data);
         joinedRoom.startGame();
@@ -439,10 +464,24 @@ public class Client implements Runnable {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
         } 
+        String result = joinedRoom.handleResultClient();
+        String player1 = joinedRoom.getClient1().getLoginUser();
+        String player2 = joinedRoom.getClient2().getLoginUser();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String date = currentDateTime.format(formatter);
+        String note = "";
+        if(result.equals("DRAW")){
+            note = "draw";
+        } else if(result.equals(player1)){
+            note = player1 + " gianh chien thang";
+        } else note = player2 + " gianh chien thang";
         
         String data = "RESULT_GAME;success;" + joinedRoom.handleResultClient() 
                 + ";" + joinedRoom.getClient1().getLoginUser() + ";" + joinedRoom.getClient2().getLoginUser() + ";" + joinedRoom.getId();
         System.out.println(data);
+        Game game = new Game(player1, player2, result, date, note);
+        new GameController().saveGame(game);
         joinedRoom.broadcast(data);
     } 
     

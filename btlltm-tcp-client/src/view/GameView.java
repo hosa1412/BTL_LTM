@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import run.ClientRun;
 import helper.*;
+import java.awt.Color;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -95,6 +96,10 @@ public class GameView extends javax.swing.JFrame {
         } catch (IOException ex) {
             
         }
+    }
+    
+    public void setQuestion(String question){
+        jLabelQuestion.setText(question);
     }
     
     public ImageIcon getScaledIcon(ImageIcon icon, int labelWidth, int labelHeight) {
@@ -192,6 +197,11 @@ public class GameView extends javax.swing.JFrame {
         }
     }
     
+    public void setMessageColor(Color color) {
+        lbResult.setForeground(color); // messageLabel là JLabel hiển thị thông báo
+    }
+
+    
     public String getSelectedButton1() {  
         for (Enumeration<AbstractButton> buttons = buttonGroup1.getElements(); buttons.hasMoreElements();) {
             AbstractButton button = buttons.nextElement();
@@ -255,6 +265,7 @@ public class GameView extends javax.swing.JFrame {
         jLabelImage = new javax.swing.JLabel();
         jTextFieldAnswer = new javax.swing.JTextField();
         btnSubmit = new javax.swing.JButton();
+        jLabelQuestion = new javax.swing.JLabel();
         pbgTimer = new javax.swing.JProgressBar();
         btnStart = new javax.swing.JButton();
         lbWaiting = new javax.swing.JLabel();
@@ -269,8 +280,8 @@ public class GameView extends javax.swing.JFrame {
         infoPLayer.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         infoPLayer.setText("Play game with:");
 
-        btnLeaveGame.setBackground(new java.awt.Color(255, 51, 51));
-        btnLeaveGame.setForeground(new java.awt.Color(255, 255, 255));
+        btnLeaveGame.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnLeaveGame.setForeground(new java.awt.Color(255, 0, 51));
         btnLeaveGame.setText("Leave Game");
         btnLeaveGame.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -298,22 +309,25 @@ public class GameView extends javax.swing.JFrame {
         panelLayout.setHorizontalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
-                .addContainerGap(156, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabelImage, javax.swing.GroupLayout.PREFERRED_SIZE, 389, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(139, 139, 139))
+                .addGap(135, 135, 135))
             .addGroup(panelLayout.createSequentialGroup()
                 .addGap(182, 182, 182)
                 .addComponent(jTextFieldAnswer, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnSubmit, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jLabelQuestion, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jLabelQuestion, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabelImage, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldAnswer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSubmit, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -588,6 +602,7 @@ public class GameView extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroup4;
     private javax.swing.JLabel infoPLayer;
     private javax.swing.JLabel jLabelImage;
+    private javax.swing.JLabel jLabelQuestion;
     private javax.swing.JTextField jTextFieldAnswer;
     private javax.swing.JLabel lbResult;
     private javax.swing.JLabel lbWaiting;

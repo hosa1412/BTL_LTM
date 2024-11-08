@@ -1,5 +1,6 @@
 package controller;
 
+import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -106,6 +107,9 @@ public class SocketHandler {
                         break;
                     case "CHAT_MESSAGE":
                         onReceiveChatMessage(received);
+                        break;
+                    case "CHAT":
+                        onReceiveChat(received);
                         break;
                     case "INVITE_TO_PLAY":
                         onReceiveInviteToPlay(received);
@@ -216,6 +220,11 @@ public class SocketHandler {
         ClientRun.messageView.setContentChat(chat);
             
         sendData("CHAT_MESSAGE;" + loginUser + ";" + userInvited  + ";" + message);
+    }
+    
+    public void sendMsg(String msg){
+        String chat = "[" + loginUser + "]: " + msg + "\n";
+        sendData("CHAT;" + chat);
     }
     
     // Play game
@@ -364,10 +373,15 @@ public class SocketHandler {
             int draw = Integer.parseInt(splitted[5]);
             int lose = Integer.parseInt(splitted[6]);
             this.password = splitted[7];
-
+            String userAvgCompetitor = "0";
+            String userAvgTime = "0";
+            String userStatus = "Online";
+            
             ClientRun.homeView.setUsername(loginUser);
             ClientRun.homeView.setUserScore(score);
             ClientRun.homeView.setInfo(loginUser, score, win, draw, lose);
+            ClientRun.openScene(ClientRun.SceneName.INFOPLAYER);
+            ClientRun.infoPlayerView.setInfoUser(splitted[2], splitted[3], splitted[4], splitted[5], splitted[6], userAvgCompetitor, userAvgTime, userStatus);
         }
     }
     
@@ -392,8 +406,8 @@ public class SocketHandler {
             String userStatus = splitted[9];
             
             ClientRun.homeView.setInfo(userName, Float.parseFloat(userScore), Integer.parseInt(userWin), Integer.parseInt(userDraw), Integer.parseInt(userLose));
-//            ClientRun.openScene(ClientRun.SceneName.INFOPLAYER);
-//            ClientRun.infoPlayerView.setInfoUser(userName, userScore, userWin, userDraw, userLose, userAvgCompetitor, userAvgTime, userStatus);
+            ClientRun.openScene(ClientRun.SceneName.INFOPLAYER);
+            ClientRun.infoPlayerView.setInfoUser(userName, userScore, userWin, userDraw, userLose, userAvgCompetitor, userAvgTime, userStatus);
         }
     }
     
@@ -483,6 +497,11 @@ public class SocketHandler {
         }
     }
     
+    private void onReceiveChat(String received){
+        String chat = received.split(";")[1];
+        ClientRun.homeView.setChatAll(chat);
+    }
+    
     // play game
     private void onReceiveInviteToPlay(String received) {
         // get status from data
@@ -564,8 +583,11 @@ public class SocketHandler {
             
             String imagePath = splitted[splitted.length - 1];
             System.out.println("Duong dan anh: " + imagePath);
+            String question = splitted[splitted.length - 2];
+            System.out.println("Question: " + question);
             this.imageUrl = imagePath;
             ClientRun.gameView.setImage(imagePath);
+            ClientRun.gameView.setQuestion(question);
             ClientRun.gameView.setStartGame(30);
         }
     }
@@ -585,8 +607,10 @@ public class SocketHandler {
                 ClientRun.gameView.showAskPlayAgain("The game is draw. Do you want to play continue?");
             } else if (result.equals(loginUser)) {
                 ClientRun.gameView.showAskPlayAgain("You win. Do you want to play continue?");
+                ClientRun.gameView.setMessageColor(Color.GREEN);
             } else {
                 ClientRun.gameView.showAskPlayAgain("You lose. Do you want to play continue?");
+                ClientRun.gameView.setMessageColor(Color.RED);
             }
         }
     }
