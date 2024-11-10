@@ -456,7 +456,7 @@ public class Client implements Runnable {
             joinedRoom.setResultClient2(received);
         }
         
-        while (!joinedRoom.getTime().equals("00:00") && joinedRoom.getTime() != null) {
+        while (!joinedRoom.getTime().equals("00:00") && joinedRoom.getTime() != null && (joinedRoom.getResultClient1() == null || joinedRoom.getResultClient2() == null)) {
             System.out.println(joinedRoom.getTime());
             try {
                 Thread.sleep(2000);
@@ -464,6 +464,9 @@ public class Client implements Runnable {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
         } 
+        joinedRoom.resetMarchTime();
+        joinedRoom.waitingClientTimer();
+        joinedRoom.setCheckSubmit(true);
         String result = joinedRoom.handleResultClient();
         String player1 = joinedRoom.getClient1().getLoginUser();
         String player2 = joinedRoom.getClient2().getLoginUser();
@@ -478,10 +481,19 @@ public class Client implements Runnable {
         } else note = player2 + " gianh chien thang";
         
         String data = "RESULT_GAME;success;" + joinedRoom.handleResultClient() 
-                + ";" + joinedRoom.getClient1().getLoginUser() + ";" + joinedRoom.getClient2().getLoginUser() + ";" + joinedRoom.getId();
+                + ";" + joinedRoom.getClient1().getLoginUser() + ";" + joinedRoom.getClient2().getLoginUser() + ";" + joinedRoom.getId() + ";" + joinedRoom.getResultRes() ;
         System.out.println(data);
-        Game game = new Game(player1, player2, result, date, note);
-        new GameController().saveGame(game);
+        synchronized (joinedRoom) {
+            
+        
+            if(!joinedRoom.getGameSaved()){
+                joinedRoom.setGameSaved(true);
+                Game game = new Game(player1, player2, result, date, note);
+                new GameController().saveGame(game);
+            } else {
+                joinedRoom.setGameSaved(false);
+            }
+        }
         joinedRoom.broadcast(data);
     } 
     
@@ -493,25 +505,37 @@ public class Client implements Runnable {
         System.out.println("client1: " + joinedRoom.getClient1().getLoginUser());
         System.out.println("client2: " + joinedRoom.getClient2().getLoginUser());
         
+        if(reply.equals("NO")){
+            joinedRoom.resetWaitingTime();
+        }
+        
         if (user1.equals(joinedRoom.getClient1().getLoginUser())) {
             joinedRoom.setPlayAgainC1(reply);
         } else if (user1.equals(joinedRoom.getClient2().getLoginUser())) {
             joinedRoom.setPlayAgainC2(reply);
         }
         
-        while (!joinedRoom.getWaitingTime().equals("00:00")) {
+        boolean checkAgain = joinedRoom.getPlayAgainC1() == null || joinedRoom.getPlayAgainC2() == null;
+        
+        while (!joinedRoom.getWaitingTime().equals("00:00") && checkAgain) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
         } 
-        
+//        joinedRoom.stopWaiting();
         String result = this.joinedRoom.handlePlayAgain();
         if (result.equals("YES")) {
+            joinedRoom.setGameSaved(false);
             joinedRoom.broadcast("ASK_PLAY_AGAIN;YES;" + joinedRoom.getClient1().loginUser + ";" + joinedRoom.getClient2().loginUser);
         } else if (result.equals("NO")) {
-            joinedRoom.broadcast("ASK_PLAY_AGAIN;NO;");
+            if(!joinedRoom.getCheckAgain()) {
+                joinedRoom.broadcast("ASK_PLAY_AGAIN;NO;");
+                joinedRoom.setCheckAgain(true);
+            } else {
+                joinedRoom.setCheckAgain(false);
+            }
             
             Room room = ServerRun.roomManager.find(joinedRoom.getId());
             // delete room            

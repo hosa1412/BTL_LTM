@@ -82,6 +82,17 @@ public class CountDownTimer {
         }, 0, 1000);
     }
 
+    public void stopTimer() {
+        if (timer != null) {
+            timer.cancel(); // Dừng Timer hiện tại
+            timer.purge();  // Xóa các tác vụ trong hàng đợi
+        }
+        if (executor != null && !executor.isShutdown()) {
+            executor.shutdownNow(); // Dừng ExecutorService
+        }
+        currentTick = 0; // Đặt currentTick về 0 để đảm bảo bộ đếm ngừng lại
+    }
+    
     public int getCurrentTick() {
         return currentTick;
     }

@@ -26,7 +26,15 @@ public class Room {
     String playAgainC1;
     String playAgainC2;
     String waitingTime= "00:00";
-
+    
+    String resultRes;
+    
+    boolean isGameSaved = false;
+    
+    boolean checkSubmit = false;
+    
+    boolean checkAgain = false;
+    
     public LocalDateTime startedTime;
 
     public Room(String id) {
@@ -48,7 +56,10 @@ public class Room {
                 time = "" + CustumDateTimeFormatter.secondsToMinutes(matchTimer.getCurrentTick());
                 System.out.println(time);
                 if (time.equals("00:00")) {
-                    waitingClientTimer();
+                    if(!checkSubmit) {
+                        waitingClientTimer(); 
+                        checkSubmit = false;
+                    }
                     if (resultClient1 == null && resultClient2 == null) {
                         draw();
                         broadcast("RESULT_GAME;success;DRAW;" + client1.getLoginUser() + ";" + client2.getLoginUser() + ";" + id);
@@ -156,7 +167,7 @@ public class Room {
         
         int answer = Integer.parseInt(splitted[4]);
         String imagePath = splitted[5];
-        
+        this.resultRes = Integer.toString(new Result().getResult(imagePath));
         if(answer == new Result().getResult(imagePath)){
             i++;
         }
@@ -392,5 +403,39 @@ public class Room {
         this.waitingTime = waitingTime;
     }
     
+    public void setGameSaved(boolean e){
+        this.isGameSaved = e;
+    }
     
+    public boolean getGameSaved(){
+        return this.isGameSaved;
+    }
+    
+    public void resetMarchTime(){
+        this.time = "00:00";
+    }
+    
+    public void resetWaitingTime(){
+        this.waitingTime = "00:00";
+    }
+    
+    public void setCheckSubmit(boolean check){
+        this.checkSubmit = check;
+    }
+
+    public void setCheckAgain(boolean check){
+        this.checkAgain = check;
+    }
+    
+    public boolean getCheckAgain(){
+        return this.checkAgain;
+    }
+    
+    public void stopWaiting(){
+        this.waitingTimer.stopTimer();
+    }
+    
+    public String getResultRes(){
+        return this.resultRes;
+    }
 }

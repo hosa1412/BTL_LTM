@@ -535,7 +535,9 @@ public class SocketHandler {
             roomIdPresent = splitted[4];
             ClientRun.openScene(ClientRun.SceneName.GAMEVIEW);
             ClientRun.gameView.setInfoPlayer(userInvited);
-            ClientRun.gameView.setStateHostRoom();
+//            ClientRun.gameView.setStateHostRoom();
+            if(userHost.equals(loginUser)) startGame(userInvited);
+            else startGame(userHost);
         }
     }
     
@@ -600,16 +602,17 @@ public class SocketHandler {
         String user1 = splitted[3];
         String user2 = splitted[4];
         String roomId = splitted[5];
-        
+        String resultRes = splitted[6];
+        String resultStr = "The result is " + resultRes + "! ";
         if (status.equals("success")) {
             ClientRun.gameView.setWaitingRoom();
             if (result.equals("DRAW")) {
-                ClientRun.gameView.showAskPlayAgain("The game is draw. Do you want to play continue?");
+                ClientRun.gameView.showAskPlayAgain(resultStr + "The game is draw. \nDo you want to play continue?");
             } else if (result.equals(loginUser)) {
-                ClientRun.gameView.showAskPlayAgain("You win. Do you want to play continue?");
+                ClientRun.gameView.showAskPlayAgain(resultStr + "You win. \nDo you want to play continue?");
                 ClientRun.gameView.setMessageColor(Color.GREEN);
             } else {
-                ClientRun.gameView.showAskPlayAgain("You lose. Do you want to play continue?");
+                ClientRun.gameView.showAskPlayAgain(resultStr + "You lose. \nDo you want to play continue?");
                 ClientRun.gameView.setMessageColor(Color.RED);
             }
         }
@@ -626,8 +629,10 @@ public class SocketHandler {
         } else {
             if (loginUser.equals(splitted[2])) {
                 ClientRun.gameView.setStateHostRoom();
+//                startGame(splitted[3]);
             } else {
                 ClientRun.gameView.setStateUserInvited();
+//                startGame(splitted[2]);
             }
         }
     }  
