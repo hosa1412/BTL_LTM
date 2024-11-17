@@ -12,6 +12,7 @@ public class Game {
     private int id;
     private String player1;
     private String player2;
+    private int questId;
     private String result;
     private String date;
     private String note;
@@ -25,9 +26,20 @@ public class Game {
         this.note = note;
     }
 
-    public Game(String player1, String player2, String result, String date, String note) {
+    public Game(int id, String player1, String player2, int questId, String result, String date, String note) {
+        this.id = id;
         this.player1 = player1;
         this.player2 = player2;
+        this.questId = questId;
+        this.result = result;
+        this.date = date;
+        this.note = note;
+    }
+
+    public Game(String player1, String player2, int questId, String result, String date, String note) {
+        this.player1 = player1;
+        this.player2 = player2;
+        this.questId = questId;
         this.result = result;
         this.date = date;
         this.note = note;
@@ -80,6 +92,19 @@ public class Game {
     public void setNote(String note) {
         this.note = note;
     }
+
+    public int getQuestId() {
+        return questId;
+    }
+
+    public void setQuestId(int questId) {
+        this.questId = questId;
+    }
     
+    
+    @Override
+    public String toString(){
+        return player1 + " " + player2 + " " + questId + " " + result + " " + date + " " + note;
+    }
 }
 

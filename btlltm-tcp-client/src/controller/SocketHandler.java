@@ -25,7 +25,7 @@ public class SocketHandler {
     float score = 0;
     String imageUrl = null;
     Thread listener = null;
-
+    String questId = null;
     public String connect(String addr, int port) {
         try {
             // getting ip 
@@ -251,7 +251,7 @@ public class SocketHandler {
             String countDownTime = splitted[1];
             int time = 30 - Integer.parseInt(countDownTime);
             
-            String data = message + ";" + imageUrl + ";" + time;
+            String data = message + ";" + imageUrl + ";" + time + ";" + this.questId;
             
             sendData("SUBMIT_RESULT;" + loginUser + ";" + competitor + ";" + roomIdPresent + ";" + data);
             ClientRun.gameView.afterSubmit();
@@ -587,6 +587,7 @@ public class SocketHandler {
             System.out.println("Duong dan anh: " + imagePath);
             String question = splitted[splitted.length - 2];
             System.out.println("Question: " + question);
+            this.questId = splitted[splitted.length - 3];
             this.imageUrl = imagePath;
             ClientRun.gameView.setImage(imagePath);
             ClientRun.gameView.setQuestion(question);
@@ -602,7 +603,7 @@ public class SocketHandler {
         String user1 = splitted[3];
         String user2 = splitted[4];
         String roomId = splitted[5];
-        String resultRes = splitted[6];
+        String resultRes = splitted[splitted.length - 1];
         String resultStr = "The result is " + resultRes + "! ";
         if (status.equals("success")) {
             ClientRun.gameView.setWaitingRoom();

@@ -28,7 +28,7 @@ public class Room {
     String waitingTime= "00:00";
     
     String resultRes;
-    
+    String resultData;
     boolean isGameSaved = false;
     
     boolean checkSubmit = false;
@@ -438,4 +438,13 @@ public class Room {
     public String getResultRes(){
         return this.resultRes;
     }
+
+    public String getResultData() {
+        return resultData;
+    }
+
+    public void setResultData(String resultData) {
+        this.resultData = resultData;
+    }
+    
 }

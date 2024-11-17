@@ -31,6 +31,15 @@ public class UserModel implements Serializable {
         this.score = score;
     }
 
+    public UserModel(String userName, String password, float score, int win, int draw, int lose) {
+        this.userName = userName;
+        this.password = password;
+        this.score = score;
+        this.win = win;
+        this.draw = draw;
+        this.lose = lose;
+    }
+    
     public UserModel(String userName, String password, float score, int win, int draw, int lose, float avgCompetitor, float avgTime) {
         this.userName = userName;
         this.password = password;

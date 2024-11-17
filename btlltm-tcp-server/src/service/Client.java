@@ -437,7 +437,7 @@ public class Client implements Runnable {
 //        String question4 = Question.renQuestion();
         String question = new Question().getQuestion(imagePath);
 //        String data = "START_GAME;success;" + roomId + ";" + question1 + question2 + question3 + question4 + imagePath;
-         String data = "START_GAME;success;" + roomId + ";" + question + ";" + imagePath;
+         String data = "START_GAME;success;" + roomId + ";" + randomNumber + ";" + question + ";" + imagePath;
        // Send question here
         joinedRoom.resetRoom();
         joinedRoom.broadcast(data);
@@ -449,7 +449,7 @@ public class Client implements Runnable {
         String user1 = splitted[1];
         String user2 = splitted[2];
         String roomId = splitted[3];
-        
+        String questId = splitted[splitted.length - 1];
         if (user1.equals(joinedRoom.getClient1().getLoginUser())) {
             joinedRoom.setResultClient1(received);
         } else if (user1.equals(joinedRoom.getClient2().getLoginUser())) {
@@ -467,33 +467,36 @@ public class Client implements Runnable {
         joinedRoom.resetMarchTime();
         joinedRoom.waitingClientTimer();
         joinedRoom.setCheckSubmit(true);
-        String result = joinedRoom.handleResultClient();
-        String player1 = joinedRoom.getClient1().getLoginUser();
-        String player2 = joinedRoom.getClient2().getLoginUser();
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String date = currentDateTime.format(formatter);
-        String note = "";
-        if(result.equals("DRAW")){
-            note = "draw";
-        } else if(result.equals(player1)){
-            note = player1 + " gianh chien thang";
-        } else note = player2 + " gianh chien thang";
-        
-        String data = "RESULT_GAME;success;" + joinedRoom.handleResultClient() 
-                + ";" + joinedRoom.getClient1().getLoginUser() + ";" + joinedRoom.getClient2().getLoginUser() + ";" + joinedRoom.getId() + ";" + joinedRoom.getResultRes() ;
-        System.out.println(data);
+        String result = "";
+       
         synchronized (joinedRoom) {
-            
         
             if(!joinedRoom.getGameSaved()){
+                result = joinedRoom.handleResultClient();
+                joinedRoom.setResultData(result);
+                String player1 = joinedRoom.getClient1().getLoginUser();
+                String player2 = joinedRoom.getClient2().getLoginUser();
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String date = currentDateTime.format(formatter);
+                String note = "";
+                if(result.equals("DRAW")){
+                    note = "draw";
+                } else if(result.equals(player1)){
+                    note = player1 + " gianh chien thang";
+                } else note = player2 + " gianh chien thang";
+
                 joinedRoom.setGameSaved(true);
-                Game game = new Game(player1, player2, result, date, note);
+                Game game = new Game(player1, player2, Integer.parseInt(questId), result, date, note);
+                System.out.println(game);
                 new GameController().saveGame(game);
             } else {
                 joinedRoom.setGameSaved(false);
             }
-        }
+        } 
+        String data = "RESULT_GAME;success;" + joinedRoom.getResultData()
+                + ";" + joinedRoom.getClient1().getLoginUser() + ";" + joinedRoom.getClient2().getLoginUser() + ";" + joinedRoom.getId() + ";" + joinedRoom.getResultRes() ;
+        System.out.println(data);
         joinedRoom.broadcast(data);
     } 
     
